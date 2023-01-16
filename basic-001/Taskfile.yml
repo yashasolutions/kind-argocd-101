@@ -1,6 +1,10 @@
+---
 version: '3'
 
 tasks:
   default:
+    cmds:
+      - task: wip
+  wip:
     cmds:
       - git add . && git commit -m "wip" && git push
