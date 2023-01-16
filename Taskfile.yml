@@ -1,0 +1,10 @@
+---
+version: 3
+
+includes:
+  basic: ./basic-001/Taskfile.yml
+
+tasks:
+  wip:
+    cmds:
+      - git add . && git commit -m "wip" && git push

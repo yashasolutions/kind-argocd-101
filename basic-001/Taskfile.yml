@@ -5,6 +5,36 @@ tasks:
   default:
     cmds:
       - task: wip
-  wip:
+  create:
+    dir: basic-001
     cmds:
-      - git add . && git commit -m "wip" && git push
+      - kind create cluster --config cluster.yml
+  delete:
+    cmds:
+      - kind delete cluster --name argocd
+  install:
+    env:
+      ARGO_MANIFEST: "https://raw.githubusercontent.com/\
+      argoproj/argo-cd/stable/manifests/\
+      core-install.yaml"
+    cmds:
+      - task: namespace
+      - kubectl apply -n argocd -f $ARGO_MANIFEST
+  namespace:
+    cmds:
+      - kubectl create namespace argocd
+    vars:
+      IS_ACTIVE:
+        sh: "kubectl get ns argocd -o json | jq .status.phase -r"
+    status:
+      - test '[ "{{.IS_ACTIVE}}" != "Active" ]'
+  argocli:
+    env:
+      ARGOCLI: "https://github.com/argoproj/\
+      argo-cd/releases/latest/\
+      download/argocd-linux-amd64"
+    cmds:
+      - curl -sSL -o ~/.local/bin/argocd $ARGCLI
+      - chmod +x ~/.local/bin/argocd
+    status:
+      - test -f ~/.local/bin/argocd
